@@ -1,0 +1,341 @@
+---
+title: "Forest Fire Data"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+$~$
+
+```{r, include=F}
+library(tableone)
+library(survey)
+library(Matching)
+library(MatchIt)
+library(Hmisc)
+library(polspline)
+library(nnet)
+library(dplyr) 
+library(knitr)
+library(kableExtra)
+```
+
+```{r options, echo=F, fig.height = 8, fig.width = 16, fig.align = "center", include=F}
+options(width = 200)
+load("/Users/tylerliu/Library/Mobile Documents/com~apple~CloudDocs/SMR/Fire_Data_Set/Database with suggested variables vc.RData");
+dt = database_relevant_var[,-c(2:16, 24:36, 40, 44, 46:52, 57:59)];
+dt_temp = database_relevant_var[c(27,28,30)];
+dt_temp = dt_temp[as.numeric(levels(dt$year.x))[dt$year.x] >= 2003 & dt$fire_origin_rec != "Private Land",]
+size1 = log(dt_temp$bh_hectares/dt_temp$assessment_hectares)
+size2 = log(dt_temp$ex_hectares/dt_temp$assessment_hectares)
+
+# Filtering and Renaming some variables
+dt$Eco_Region_Name_recoded = as.character(dt$Eco_Region_Name_recoded)
+dt$Eco_Region_Name_recoded[dt$Eco_Region_Name_recoded != "Clear Hills Upland" & dt$Eco_Region_Name_recoded != "Mid-Boreal Uplands"] = "Other"
+dt$Eco_Region_Name_recoded = as.factor(dt$Eco_Region_Name_recoded)
+dt$fuel_type_rec = as.character(dt$fuel_type_rec)
+dt$fuel_type_rec[dt$fuel_type_rec != "C2" & dt$fuel_type_rec != "M2"] = "Other"
+dt$fuel_type_rec = as.factor(dt$fuel_type_rec)
+dt$Month = as.character(dt$Month)
+dt$Month[dt$Month == "August" | dt$Month == "September or October"] = "August to October"
+dt$Month[dt$Month == "May" | dt$Month == "June"] = "June or May"
+dt$Month = factor(dt$Month)
+
+dt$response_time = pmin(dt$response_time, quantile(dt$response_time, 0.95));
+dt = dt[as.numeric(levels(dt$year.x))[dt$year.x] >= 2003 & dt$fire_origin_rec != "Private Land",]
+dt = droplevels(dt);
+dt$year.x= as.numeric(dt$year.x)
+
+dt$response_time = log(dt$response_time+1)
+dt$Count_fire_overlap = log(dt$Count_fire_overlap+1)
+dt$duration_BH = log(dt$duration_BH+1)
+
+names(dt)=c("ID_Wildfire", "FWI_Dm1", "FWI_Dm2", "FWI_D0", "FWI_D1", "FWI_D2", "Year", 
+            "Detection_Agent", "Eco_Region", "Fire_Origin", "Fuel_Type", "Treatment", 
+            "Period", "Month", "y", "log_Duration_BH","log_Response_Time", "log_Count_Fire_Overlap", "log_IA_size")
+dt$Treatment = factor(dt$Treatment,level=c('Air Tanker', 'HAC1R', 'HAC1H', 'HAC1F', "Ground-based action"))
+
+dt = droplevels(dt);
+var_names = names(dt)[-c(1, 10, 12, 15)]
+tab = CreateTableOne(vars = var_names, strata = "Treatment", data = dt, test = FALSE, smd = TRUE)
+print(tab,nonnormal = c("Response_Time",'Count_Fire_Overlap'),smd = TRUE)
+```
+
+```{r, echo=F, include=F}
+confounder_matrix = model.matrix(y ~ . -1 - ID_Wildfire - Treatment - log_Duration_BH, dt)
+fit_m1 = polyclass(data = dt$Treatment, cov = confounder_matrix)
+trt_propensity1 = ppolyclass(cov = confounder_matrix, fit = fit_m1)
+colnames(trt_propensity1) = c('Air Tanker','HAC1R','HAC1H','HAC1F',"Ground-based action")
+
+fit_m2 = multinom(dt$Treatment~., data = as.data.frame(confounder_matrix))
+trt_propensity2 = fit_m2$fitted.values
+head(trt_propensity2)
+trt_propensity = trt_propensity2
+
+hx = 1/rowSums(1/trt_propensity)
+# for each sample, the weight is :
+indicator_matrix = model.matrix(~ -1 + Treatment,dt)
+OW = rowSums(hx/trt_propensity * indicator_matrix)
+```
+
+## Fitted Model Summary
+
+The outcome model for response Y (increased fire size at the stage being held) is fitted with binomial glm and canonical link, and for Duration_BH, is fitted using gaussian glm and canonical link. The Year^2 is added as the main effect. 
+
+For the model with response Y, the interaction are between possible confounders and the treatment (Treatment:Confounders) except for the one between Treatment and Year, which is removed. 
+
+For the model with response Duration_BH, the first one comes with all interactions except for the one between Treatment and Year, and the second one includes only interactions between treatment and period, log_IA_size, response time, FWI_Dm1, FWI_D0, eco-region.
+
+```{r, echo = F, include=F}
+cbindX = function(a,b){
+  c = matrix(NA, nrow = dim(a)[1], ncol = 6)
+  c[,1:3] = a
+  rownames(c) = rownames(a)
+  colnames(c) = rep(colnames(a),2)
+  for(i in 1:dim(b)[1]){
+    for(j in 1:dim(c)[1]){
+      if(rownames(c)[j] == rownames(b)[i]){
+        c[j,4:6] = b[i,]
+        next
+      }
+    }
+  }
+  return(c)
+}
+
+get_confint = function(model){
+  m = model
+  ce = as.matrix(coef(m))
+  colnames(ce) = c("coef")
+  ci = cbind(ce-qnorm(0.975)*sqrt(diag(vcov(m))),ce+qnorm(0.975)*sqrt(diag(vcov(m))))
+  summary = round(cbind(ce,ci),4)
+  colnames(summary) = c("coef","2.5%","97.5%")
+  return(summary)
+}
+
+dt1 = dt[,c(2:9,11:15,17:19)]
+
+m_outcome1 = glm(y~. + I(Year^2) + Treatment:. - Treatment:Year,family = "binomial",weights=OW, data=dt1)
+outcome_summary = get_confint(m_outcome1)
+
+dt2 = dt1[,-c(13)]
+m_duration1 = glm(dt$log_Duration_BH~.+I(Year^2)+Treatment:.- Treatment:Year, family = "gaussian",weights=OW,data=dt2)
+duration_summary1 = get_confint(m_duration1)
+
+m_duration2 = glm(dt$log_Duration_BH~.+I(Year^2)+Treatment:(Period+FWI_Dm1+FWI_D0+Eco_Region+log_Response_Time+log_IA_size), family = "gaussian",weights=OW,data=dt2)
+duration_summary2 = get_confint(m_duration2)
+
+duration_summary = cbindX(duration_summary1, duration_summary2)
+model_summary = cbind(outcome_summary,duration_summary)
+
+```
+$~$
+
+```{r, echo=F}
+kable(model_summary) %>%
+  kable_styling(bootstrap_options = "bordered", full_width = F) %>%
+  add_header_above(c(" ", "W/ All Interactions" = 3, "W/ All Interactions" = 3, "W/ Partial Interaction" = 3)) %>%
+  add_header_above(c(" ", "Response: Y" = 3, "Response: log Duration_BH" = 6))
+```
+
+# Benefit Table on Duration_BH
+
+The effect brought by each treatment on Duration_BH according to our model is computed. The baseline is ***Air Tanker***. The first colomn is sample ID. The first 30 samples are presented below. The second colomn is the treatment that is actually selected and applied. The third colomn is the treatment with the highest propensity score. And the "Best Treatment" colomns gives the treatment that has the "most negative effect" as we want the best treatment will be the one that minimize the Duration_BH.
+
+```{r, echo=F}
+
+pred_trt = function(mat,treatment,p){
+  if(p==1){index = as.matrix(apply(mat, 1, function(x) which.max(x)))}
+  else{index = as.matrix(apply(mat, 1, function(x) which.min(x)))}
+  trt = apply(index, 1, function(x){
+    for (i in 1:5){
+      if(x == i)
+        return(treatment[i])
+    }
+  })
+  return(trt)
+}
+
+compare_trt = function(model, dataset, treatment){
+  m = model
+  dt = dataset
+  dt$Treatment = treatment[1]
+  result_baseline = predict(m, dt)
+  temp = matrix(0, nrow=length(result_baseline)[1],ncol = 1)
+  for(i in treatment[-c(1)]){
+    dt$Treatment = i
+    result = predict(m, dt)
+    temp = cbind(temp,result-result_baseline)
+  }
+  return(temp[,-1])
+}
+
+trt_names = colnames(trt_propensity2)
+trt_predicted = pred_trt(fit_m2$fitted.values,trt_names,1)
+m1_comparison = compare_trt(m_duration1, dt2, trt_names)
+m2_comparison = compare_trt(m_duration2, dt2, trt_names)
+
+colnames(m1_comparison) = colnames(m2_comparison) = c('HAC1R','HAC1H','HAC1F',"Ground-based action")
+m1_best = pred_trt(cbind(0,m1_comparison),trt_names,0)
+m2_best = pred_trt(cbind(0,m2_comparison),trt_names,0)
+
+```
+
+```{r, echo=F}
+trt_duration =cbind(as.character(dt$Treatment), trt_predicted,  round(m1_comparison,4), m1_best, round(m2_comparison,4), m2_best)
+colnames(trt_duration) = c("Treatment Applied", "Treatment Predicted", 'HAC1R','HAC1H','HAC1F',"Ground-based action", "Best Treatment",'HAC1R','HAC1H','HAC1F',"Ground-based action","Best Treatment Predicted")
+kable(trt_duration[1:30,]) %>%
+  kable_styling(bootstrap_options = "bordered", full_width = F) %>%
+  add_header_above(c(" "," "=1 ," " = 1, "Benefit" = 4," "=1, "Benefit" = 4," " = 1)) %>%
+  add_header_above(c(" "," "=1 ," " = 1, "Model W/ All Interations"=5,"Model W/ Partial Interaction" = 5))
+```
+
+```{r, echo = F, fig.width=12}
+summary(m1_comparison)
+boxplot(m1_comparison, xlab = c("Benefit of each treatment on Duration_BH in this sample set"), main = c("Model W/ All Interations"))
+abline(h=0, col = "red")
+summary(m2_comparison)
+boxplot(m2_comparison, xlab = c("Benefit of each treatment on Duration_BH in this sample set"), main = c("Model W/ Partial Interaction"))
+abline(h=0, col="red")
+```
+
+## Characteristics of Fires Under Each Best Treatment
+
+Here is the table for the model with all interactions.
+```{r,echo=F}
+var_names = names(dt)[-c(1, 10, 12, 15)]
+dt3 = dt
+m = m1_best
+dt3[m == trt_names[1],"Treatment"] = trt_names[1]
+dt3[m == trt_names[2],"Treatment"] = trt_names[2]
+dt3[m == trt_names[3],"Treatment"] = trt_names[3]
+dt3[m == trt_names[4],"Treatment"] = trt_names[4]
+dt3[m == trt_names[5],"Treatment"] = trt_names[5]
+tab = CreateTableOne(vars = var_names, strata = "Treatment", data = dt3, test = FALSE, smd = TRUE)
+print(tab,nonnormal = c("Response_Time",'Count_Fire_Overlap'),smd = TRUE)
+```
+
+
+Here is the table for the model with partial interactions.
+```{r,echo=F}
+m = m2_best
+dt3[m == trt_names[1],"Treatment"] = trt_names[1]
+dt3[m == trt_names[2],"Treatment"] = trt_names[2]
+dt3[m == trt_names[3],"Treatment"] = trt_names[3]
+dt3[m == trt_names[4],"Treatment"] = trt_names[4]
+dt3[m == trt_names[5],"Treatment"] = trt_names[5]
+tab = CreateTableOne(vars = var_names, strata = "Treatment", data = dt3, test = FALSE, smd = TRUE)
+print(tab,nonnormal = c("Response_Time",'Count_Fire_Overlap'),smd = TRUE)
+p = print(tab,nonnormal = c("Response_Time",'Count_Fire_Overlap'),smd = TRUE)
+kable(p, format = "latex")
+print(paste0("How many best treatment predicted are the same for these 2 models (full and partial interactions): ", sum(m1_best == m2_best)/length(m1_best)))
+
+```
+
+
+## Study on Fire Size
+
+Here, the model with ***log(Being_Held_Size / Initial_Assessment_Size)*** and the model with ***log(Extinction_Size / Initial_Assessment_Size)*** as the response is studied. Though effects of "Treatment" on Y and Duration_BH are kind of kind of counterintuitive, after variable selection, the model in which most variables are significant is given below and they might reveal something more about the effect of each treatment. Actually, the model with all interactions gives almost the same trend while main effect of Treatment are kept significant, so to make the pattern maybe more clear, I discard some varaibles with low p values.
+
+Both two log transformed size ratio are heavily right skewed.
+
+```{r, echo = F}
+par(mfrow=c(1,2))
+boxplot(size1, xlab = c("log(Being_Held_Size / Initial_Assessment_Size)"))
+boxplot(size2, xlab = c("log(Extinction_Size / Initial_Assessment_Size)"))
+```
+
+```{r, echo=T}
+## The response here is log(Being_Held_Size / Initial_Assessment_Size)
+m_size1 = glm(size1~.+Treatment:.- Treatment:Year-Treatment:Month - Treatment:FWI_Dm1 - Treatment:FWI_Dm2 - Treatment:FWI_D1 - Treatment:FWI_D2 -Treatment:Fuel_Type - Treatment:Eco_Region - Treatment:Detection_Agent -FWI_Dm1 - FWI_Dm2 - FWI_D2, weights = OW, family = "gaussian",data=dt2)
+summary(m_size1)
+
+## The response here is log(Extinction_Size / Initial_Assessment_Size)
+m_size2 = glm(size2~.+Treatment:.- Treatment:Year-Treatment:Month - Treatment:FWI_Dm1 - Treatment:FWI_Dm2 - Treatment:FWI_D1 - Treatment:FWI_D2 -Treatment:Fuel_Type - Treatment:Eco_Region - Treatment:Detection_Agent -FWI_Dm1 - FWI_Dm2 - FWI_D2, weights = OW, family = "gaussian",data=dt2)
+summary(m_size2)
+
+## The response here is log(Duration_BH). It is under the same set of variable
+m_size3 = glm(dt$log_Duration_BH~.+Treatment:.- Treatment:Year-Treatment:Month - Treatment:FWI_Dm1 - Treatment:FWI_Dm2 - Treatment:FWI_D1 - Treatment:FWI_D2 -Treatment:Fuel_Type - Treatment:Eco_Region - Treatment:Detection_Agent -FWI_Dm1 - FWI_Dm2 - FWI_D2, weights = OW, family = "gaussian",data=dt2)
+summary(m_size3)
+
+m_size4 = glm(size1~., weights = OW, family = "gaussian",data=dt2)
+summary(m_size4)
+
+## The response here is log(Duration_BH). It is under the same set of variable
+m_size5 = glm(dt$log_Duration_BH~., weights = OW, family = "gaussian",data=dt2)
+summary(m_size5)
+```
+
+As we see, the model with these 2 new variable as response shows something similar and give a more clear pattern than the model with Duration_BH as response. For the new response, the main effect of all treatments are significant and they are positive. But the story given by our model leads to something reverse and the interactions make great difference.
+
+```{r, echo=F}
+m_1scomparison = compare_trt(m_size1, dt2, trt_names)
+m_2scomparison = compare_trt(m_size2, dt2, trt_names)
+colnames(m_1scomparison) = colnames(m_2scomparison) = c('HAC1R','HAC1H','HAC1F',"Ground-based action")
+m_1sbest = pred_trt(cbind(0,m_1scomparison),trt_names,0)
+m_2sbest = pred_trt(cbind(0,m_2scomparison),trt_names,0)
+boxplot(m_1scomparison, xlab = c("Benefit of each treatment on Duration_BH in this sample set"))
+abline(h=0, col=c("red"))
+```
+
+
+```{r, echo = T}
+# The best treatment predicted that minimize log(Being_Held_Size / Initial_Assessment_Size)
+table(m_1sbest)
+# We see that the following are all postive
+as.matrix(coef(m_size1)[as.matrix(coef(m_size1))>0])
+# We see that the following are all negative
+as.matrix(coef(m_size1)[as.matrix(coef(m_size1))<0])
+```
+
+The clear and significant pattern here is that the Treatment's interaction with FWI, log_Response_Time, log_Count_Fire_Overlap are all negative, while the interaction with PeriodPM and log_IA_size are all positive. Based on this model, a simple conclusion could be made that "Air Tanker" is the most effective in dealing with fire with large IA_size in the morning. If Response_Time is long, FWI and Count_Fire_Overlap is high, other treatments will be more effective. 
+
+It seems all other treatment's positive main effect put them under disadvantage, but however, the coefficient of interaction with FIW, log_Response_Time and log_Count_Fire_Overlap pull the value down quickly and make them more ideal choice than "Air Tanker" in many situations.
+
+<!-- ### Benefit Table on Log Fire Size Ratio -->
+
+<!-- The model above is picked and the benefit fore each treatment on log transformed size ratio is calculated. The first 30 samples are presented below.  -->
+
+<!-- ```{r, echo=F} -->
+
+<!-- m_1scomparison = compare_trt(m_size1, dt2, trt_names) -->
+<!-- m_2scomparison = compare_trt(m_size2, dt2, trt_names) -->
+<!-- colnames(m_2scomparison) = colnames(m_2scomparison) = c('HAC1R','HAC1H','HAC1F',"Ground-based action") -->
+<!-- m_1sbest = pred_trt(cbind(0,m_1scomparison),trt_names,0) -->
+<!-- m_2sbest = pred_trt(cbind(0,m_2scomparison),trt_names,0) -->
+
+<!-- trt_size =cbind(as.character(dt$Treatment), trt_predicted,  round(m_1scomparison,4), m_1sbest, round(m_2scomparison,4), m_2sbest) -->
+
+<!-- colnames(trt_size) = c("Treatment Applied", "Treatment Predicted", 'HAC1R','HAC1H','HAC1F',"Ground-based action", "Best Treatment",'HAC1R','HAC1H','HAC1F',"Ground-based action","Best Treatment Predicted") -->
+
+<!-- print(paste0("How many best treatment predicted are the same for these 2 models (log(Being_Held_Size / Initial_Assessment_Size) and log(Extinction_Size / Initial_Assessment_Size)): ",sum(m_1sbest == m_2sbest)/length(m_2sbest))) -->
+
+<!-- kable(trt_size[1:30,]) %>% -->
+<!--   kable_styling(bootstrap_options = "bordered", full_width = F) %>% -->
+<!--   add_header_above(c(" "," "=1 ," " = 1, "Benefit" = 4," "=1, "Benefit" = 4," " = 1)) %>% -->
+<!--   add_header_above(c(" "," "=1 ," " = 1, "log(Being_Held_Size / Initial_Assessment_Size)"=5,"log(Extinction_Size / Initial_Assessment_Size)" = 5)) -->
+<!-- ``` -->
+
+### Characteristics of Fires Under Each Best Treatment According to The Model With log(Being_Held_Size / Initial_Assessment_Size) As Response
+
+```{r, echo =F}
+var_names = names(dt)[-c(1, 10, 12, 15)]
+dt3 = dt
+m = m_1sbest
+dt3[m == trt_names[1],"Treatment"] = trt_names[1]
+dt3[m == trt_names[2],"Treatment"] = trt_names[2]
+dt3[m == trt_names[3],"Treatment"] = trt_names[3]
+dt3[m == trt_names[4],"Treatment"] = trt_names[4]
+dt3[m == trt_names[5],"Treatment"] = trt_names[5]
+tab = CreateTableOne(vars = var_names, strata = "Treatment", data = dt3, test = FALSE, smd = TRUE)
+print(tab,nonnormal = c("Response_Time",'Count_Fire_Overlap'),smd = TRUE)
+
+```
+
