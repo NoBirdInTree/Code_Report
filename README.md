@@ -28,7 +28,7 @@ For tracker, click the link (https://covid19.trackvaccines.org/), if it expires,
 
 Some of my works in pdf files are attached. Some contents to the latest weekly Bios601's homework will be posted.
 
-## 2. In some of my CS courses, I gained some experiences of executing computation tasks on the environment set up on AWS and GCP (Linux System), did some data crawling, annotation, analysis, learned some classical machine learning algorithms and practiced them on real world dataset (in-class Kaggle competition). 
+### 2. In some of my CS courses, I gained some experiences of executing computation tasks on the environment set up on AWS and GCP (Linux System), did some data crawling, annotation, analysis, learned some classical machine learning algorithms and practiced them on real world dataset (in-class Kaggle competition). 
 
 Here are some toy codes which includes: 
 
