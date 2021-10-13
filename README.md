@@ -1,6 +1,6 @@
 # Codes and Reports:
 
-I’ve done some quantitative researches in courses or in my internships.
+I’ve done some quantitative researches in courses or in my internships. -- My bad. Another contributor is my alt (backup one :)
 
 ## Extracurricular (internship) stuffs:
 
