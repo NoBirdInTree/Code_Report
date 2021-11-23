@@ -1,6 +1,8 @@
 # Codes and Reports:
 
-I’ve done some quantitative researches in courses or in my internships. -- My bad. Another contributor is my alt account (backup one :)
+-- My bad. The other contributor SpyroLiu is my alt account (backup one :)
+
+I’ve done some quantitative researches in courses or in my internships. 
 
 ## Extracurricular (internship) stuffs:
 
