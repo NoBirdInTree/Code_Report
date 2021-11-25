@@ -4,7 +4,9 @@
 
 I've done some quantitative researches in courses or in my internships. 
 
-# Papers and Writing Samples
+-------------------------------------------------
+
+## Papers and Writing Samples
 
 Some papers or reports from my research introduced below are uploaded here.
 
@@ -16,7 +18,7 @@ Poli_Polarization.pdf - (Paper Accepted) "Online Partisan Polarization of COVID-
 
 -------------------------------------------------
 
-## Extracurricular (internship) stuffs:
+## Extracurricular explorations through internships:
 
 ### 1. My current RA works in the biomedical field. Details should be filled in early Dec. 
 
