@@ -2,13 +2,13 @@
 
 -- My bad. The other contributor SpyroLiu is my alt account (backup one :)
 
-I've done some quantitative researches in courses or in my internships. 
+I've done some quantitative researches in courses or my internships. 
 
 -------------------------------------------------
 
-## Papers and Writing Samples
+## Papers and Writing Samples from the Research Introduced Below
 
-Some papers or reports from my research introduced below are uploaded here.
+Some papers or reports from my research are uploaded here.
 
 G_dWOLS.pdf - (A good writing sample from my independent research project funded by ARIA) G-dWOLS Analysis of Different Fire Suppression Methods' Effectiveness on Alberta Wildfires
 
@@ -39,7 +39,7 @@ For the tracker, click the link (https://covid19.trackvaccines.org/). If it expi
 
 -------------------------------------------------
 
-## In-course stuffs:
+## School works:
 
 #### 1.In some of my stat courses, I investigated a few datasets in the generalize linear model course and the statistical learning course at which techniques like binomial (logistic), multinomial, Poisson, quasi-Poisson, gamma regressions with F/Wald/Wilk tests, and PCA (multiple) correspondence analysis, various distance/similarity measures are used. The assignments (reports) are done using R. 
 
