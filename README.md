@@ -4,6 +4,18 @@
 
 I’ve done some quantitative researches in courses or in my internships. 
 
+## Papers and Writing Samples
+
+Some papers or reports from my research are uploaded to here.
+
+G_dWOLS.pdf - (A good writing sample from my independent research project funded by ARIA) G-dWOLS Analysis of Different Fire Suppression Methods’ Effectiveness on Alberta Wildfires
+
+Cardio_Rupture.pdf - (Paper Submitted) “Inhibition of integrin αv prevents intracranial aneurysms from rupture”. Journal of the American College of Cardiology. Manuscript ID: JACC-102121-4035.
+
+Poli_Polarization.pdf - (Paper Accepted) “Online Partisan Polarization of COVID-19”. 2021 International Conference on Data Mining Workshops. Paper ID: DM821.
+
+-------------------------------------------------
+
 ## Extracurricular (internship) stuffs:
 
 ### 1. My current RA works in the biomed field. Details should be filled in Nov. or early Dec.. 
@@ -20,7 +32,7 @@ Scripts of some parts of this project are: 1. Word embedding script using BERT. 
 
 For tracker, click the link (https://covid19.trackvaccines.org/), if it expires, I will uploaded a brief recording. R dashboard codes are given.
 
-### 5. Financial data analysis. Some daily working codes are disclosed ...
+### 5. Financial data analysis. Some daily working codes are disclosed.
 
 -------------------------------------------------
 
@@ -28,13 +40,6 @@ For tracker, click the link (https://covid19.trackvaccines.org/), if it expires,
 
 ### 1.In some of my stat courses, I investigated a few datasets in the generalize linear model course and the statistical learning course at which techniques like binomial (logistic), multinomial, poisson, quasi-poisson, gamma regressions with F/Wald/Wilk tests, and PCA, (multiple) correspondence analysis, various distance/similarity measures are used. The assignments (reports) are done using R. 
 
-
 ### 2.Some contents to my onging (commented) Bios601's homework and solutions in some math courses will also be posted. 
 
-### 3. In some of my CS courses, I gained some experiences of executing computation tasks on the environment set up on AWS and GCP (Linux System), did some data crawling, annotation, analysis, learned some classical machine learning algorithms and practiced them on real world dataset (in-class Kaggle competition). 
-
-Here are some toy codes which includes: 
-
----1. Scrapping data from html text. 
----2. Implementation of Naïve Bayes and Text Classification Task on Reddit (A Famous Forum). 
----3. MINST dataset number recognition using CNN.
+### 3.In some of my CS courses, I gained some experiences of executing computation tasks on the environment set up on AWS and GCP (Linux System), did some data crawling, annotation, analysis, learned some classical machine learning algorithms and practiced them on real world dataset (in-class Kaggle competition). Here are some toy codes which includes: ---1. Scrapping data from html text. ---2. Implementation of Naïve Bayes and Text Classification Task on Reddit (A Famous Forum).  ---3. MINST dataset number recognition using CNN.
