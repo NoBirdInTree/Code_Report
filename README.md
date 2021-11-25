@@ -38,8 +38,8 @@ For tracker, click the link (https://covid19.trackvaccines.org/), if it expires,
 
 ## In-course stuffs:
 
-### 1.In some of my stat courses, I investigated a few datasets in the generalize linear model course and the statistical learning course at which techniques like binomial (logistic), multinomial, poisson, quasi-poisson, gamma regressions with F/Wald/Wilk tests, and PCA, (multiple) correspondence analysis, various distance/similarity measures are used. The assignments (reports) are done using R. 
+#### 1.In some of my stat courses, I investigated a few datasets in the generalize linear model course and the statistical learning course at which techniques like binomial (logistic), multinomial, poisson, quasi-poisson, gamma regressions with F/Wald/Wilk tests, and PCA, (multiple) correspondence analysis, various distance/similarity measures are used. The assignments (reports) are done using R. 
 
-### 2.Some contents to my onging (commented) Bios601's homework and solutions in some math courses will also be posted. 
+#### 2.Some contents to my onging (commented) Bios601's homework and solutions in some math courses will also be posted. 
 
-### 3.In some of my CS courses, I gained some experiences of executing computation tasks on the environment set up on AWS and GCP (Linux System), did some data crawling, annotation, analysis, learned some classical machine learning algorithms and practiced them on real world dataset (in-class Kaggle competition). Here are some toy codes which includes: ---1. Scrapping data from html text. ---2. Implementation of Naïve Bayes and Text Classification Task on Reddit (A Famous Forum).  ---3. MINST dataset number recognition using CNN.
+#### 3.In some of my CS courses, I gained some experiences of executing computation tasks on the environment set up on AWS and GCP (Linux System), did some data crawling, annotation, analysis, learned some classical machine learning algorithms and practiced them on real world dataset (in-class Kaggle competition). Here are some toy codes which includes: ---1. Scrapping data from html text. ---2. Implementation of Naïve Bayes and Text Classification Task on Reddit (A Famous Forum).  ---3. MINST dataset number recognition using CNN.
