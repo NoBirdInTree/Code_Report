@@ -1,6 +1,8 @@
 # Codes and Reports:
 
-I’ve done some quantitative researches in courses or in my internships.
+-- My bad. The other contributor SpyroLiu is my alt account (backup one :)
+
+I’ve done some quantitative researches in courses or in my internships. 
 
 ## Extracurricular (internship) stuffs:
 
@@ -27,7 +29,7 @@ For tracker, click the link (https://covid19.trackvaccines.org/), if it expires,
 ### 1.In some of my stat courses, I investigated a few datasets in the generalize linear model course and the statistical learning course at which techniques like binomial (logistic), multinomial, poisson, quasi-poisson, gamma regressions with F/Wald/Wilk tests, and PCA, (multiple) correspondence analysis, various distance/similarity measures are used. The assignments (reports) are done using R. 
 
 
-### 2.Some contents to the latest weekly Math557  and (commented) Bios601's homework will also be posted. I developed the habit of using Latex since the late second term of my junior year (I lost my apple pencile :)
+### 2.Some contents to my onging (commented) Bios601's homework and solutions in some math courses will also be posted. 
 
 ### 3. In some of my CS courses, I gained some experiences of executing computation tasks on the environment set up on AWS and GCP (Linux System), did some data crawling, annotation, analysis, learned some classical machine learning algorithms and practiced them on real world dataset (in-class Kaggle competition). 
 
