@@ -10,13 +10,13 @@ I've done some quantitative researches in courses or my internships.
 
 Some papers or reports from my research are uploaded here.
 
-G_dWOLS.pdf - (A good writing sample from my independent research project funded by ARIA) G-dWOLS Analysis of Different Fire Suppression Methods' Effectiveness on Alberta Wildfires
+(1) G_dWOLS.pdf - (A good writing sample from my independent research project funded by ARIA) G-dWOLS Analysis of Different Fire Suppression Methods' Effectiveness on Alberta Wildfires
 
-Cardio_Rupture.pdf - (Paper Submitted) "Inhibition of integrin αv prevents intracranial aneurysms from rupture." Journal of the American College of Cardiology. Manuscript ID: JACC-102121-4035.
+(2) Cardio_Rupture.pdf - (Paper Submitted) "Inhibition of integrin αv prevents intracranial aneurysms from rupture." Journal of the American College of Cardiology. Manuscript ID: JACC-102121-4035.
 
-Poli_Polarization.pdf - (Paper Accepted) "Online Partisan Polarization of COVID-19". 2021 International Conference on Data Mining Workshops. Paper ID: DM821.
+(3) Poli_Polarization.pdf - (Paper Accepted) "Online Partisan Polarization of COVID-19". 2021 International Conference on Data Mining Workshops. Paper ID: DM821.
 
-COVID-19_Tracker_Correspondence.pdf --  (Manuscript Submitted) "Tracking COVID-19 Vaccine Development and Approvals: An Online Resource that Simplifies the Evolving Global Landscape of COVID-19 Vaccines" has been submitted to The Lancet Digital Health. Since the option of the group authorship is not provided and the cap is 5, I am listed in the group acknowledgement.
+(4) COVID-19_Tracker_Correspondence.pdf --  (Manuscript Submitted) "Tracking COVID-19 Vaccine Development and Approvals: An Online Resource that Simplifies the Evolving Global Landscape of COVID-19 Vaccines" has been submitted to The Lancet Digital Health. Since the option of the group authorship is not provided and the cap is 5, I am listed in the group acknowledgement.
 
 -------------------------------------------------
 
