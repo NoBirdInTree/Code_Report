@@ -6,6 +6,10 @@ I've done some quantitative researches in courses or my internships.
 
 -------------------------------------------------
 
+## My latest CV is given above
+
+-------------------------------------------------
+
 ## Papers and Writing Samples from the Research Introduced Below
 
 Some papers or reports from my research are uploaded here.
