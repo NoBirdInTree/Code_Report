@@ -18,7 +18,7 @@ Some papers or reports from my research are uploaded here.
 
 (2) Cardio_Rupture.pdf - (Paper Under Review) "Inhibition of integrin αv prevents intracranial aneurysms from rupture." Journal of the American College of Cardiology. Manuscript ID: JACC-102121-4035.
 
-(3) Cardio_Rupture.pdf - (Paper Under Review) "Inhibition of integrin αv prevents intracranial aneurysms from rupture." Journal of the American College of Cardiology. Manuscript ID: JACC-102121-4035.
+(3) Cardio_Stroke.pdf - (Paper Submitted) "The Effect of Lipoprotein(a) on Stroke Recurrence Attenuates at Low LDL-C and Inflammation Levels." American Stroke Association (ASA). STROKE/2021/034924-TR3.
 
 (4) Poli_Polarization.pdf - (Paper Accepted) "Online Partisan Polarization of COVID-19". 2021 International Conference on Data Mining Workshops. Paper ID: DM821.
 
