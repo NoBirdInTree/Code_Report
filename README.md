@@ -28,7 +28,7 @@ Some papers or reports from my research are uploaded here.
 
 ## Extracurricular explorations through internships:
 
-### 1. My current RA works in the biomedical field. Details should be filled in early Dec. 
+### 1. My most recent RA works in the biomedical field. Some miscellaneous stuff
 
 ### 2. G-dWOLS Analysis of Fire Suppression Methods' Effectiveness on Alberta Wildfires. (A well-written report and codes are given)
 
